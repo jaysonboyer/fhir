@@ -1,0 +1,49 @@
+# Werkmeister service-registry fragment for this repo — see the werkmeister users guide,
+# "Writing a fragment". Merged into ~/.werkmeister/services.yaml by `werkmeister registry sync`.
+
+services:
+  smart-app:
+    path: apps/smart-app
+    type: web
+    archetype: node-web
+    # No unit tests; the archetype's default `npm test` would always fail, so the build is the check.
+    test: "pnpm --filter smart-app build"
+    internal_port: 5173
+    port_offset: 10
+    health_endpoint: /launch.html
+    setup_service: fhir-install
+    image: node:24
+    command: "corepack enable && cd apps/smart-app && exec pnpm run dev"
+    memory_limit: 1G
+    memory_reservation: 256M
+    node_modules_volume: fhir-node-modules
+    validate: >-
+      Open https://launch.smarthealthit.org, set App Launch URL to
+      https://smart-app.{{local_domain}}/launch.html, click Launch, pick a patient, and check the
+      page shows that patient's name and medications.
+    feature_router: {}
+
+  cds-services:
+    path: apps/cds-services
+    type: api
+    archetype: node-service
+    test: "cd apps/cds-services && node --test"
+    internal_port: 3000
+    port_offset: 11
+    health_endpoint: /health
+    image: node:24
+    # No dependencies, so no install step.
+    command: "cd apps/cds-services && exec node --watch src/server.js"
+    memory_limit: 512M
+    memory_reservation: 128M
+    validate: >-
+      GET https://cds-services.{{local_domain}}/cds-services lists patient-greeting; then add that
+      URL in https://sandbox.cds-hooks.org (Settings > Add CDS Services) and check the
+      "Hello <patient>!" card appears on Patient View.
+    feature_router: {}
+
+setup_services:
+  fhir-install:
+    image: node:24
+    command: "corepack enable && pnpm install --frozen-lockfile"
+    node_modules_volume: fhir-node-modules

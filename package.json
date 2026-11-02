@@ -1,0 +1,17 @@
+{
+  "name": "fhir-monorepo",
+  "private": true,
+  "description": "Playground for learning SMART on FHIR apps and CDS Hooks services.",
+  "packageManager": "pnpm@10.34.7",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
