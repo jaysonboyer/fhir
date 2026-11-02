@@ -30,9 +30,9 @@ Docs hub: https://docs.smarthealthit.org/
 
 `apps/smart-app` is where this tutorial ends up. Read the two files in order:
 
-1. [src/launch.js](apps/smart-app/src/launch.js) — the EHR opens `launch.html?iss=…&launch=…`;
+1. [src/launch.ts](apps/smart-app/src/launch.ts) — the EHR opens `launch.html?iss=…&launch=…`;
    `FHIR.oauth2.authorize()` finds the server's OAuth endpoints and redirects to log in.
-2. [src/app.js](apps/smart-app/src/app.js) — OAuth redirects back to `index.html?code=…`;
+2. [src/app.ts](apps/smart-app/src/app.ts) — OAuth redirects back to `index.html?code=…`;
    `FHIR.oauth2.ready()` gets the token, then the app reads FHIR resources.
 
 Try it: run `pnpm dev`, open https://launch.smarthealthit.org, set **App Launch URL** to
@@ -57,7 +57,7 @@ registering the app in the Cerner code console to get a real `clientId` and redi
 ### 3. CDS Hooks — [Cerner CDS Services tutorial](https://github.com/cerner/cds-services-tutorial)
 
 `apps/cds-services` implements the tutorial's `patient-greeting` service with plain
-`node:http`: [src/server.js](apps/cds-services/src/server.js).
+`node:http`: [src/server.ts](apps/cds-services/src/server.ts).
 
 Try it: `pnpm dev`, open https://sandbox.cds-hooks.org, **Settings > Add CDS Services**,
 enter `http://localhost:3000/cds-services`. The Patient View shows a "Hello …" card.
