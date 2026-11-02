@@ -9,10 +9,12 @@
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
     "lint": "biome ci .",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "e2e": "playwright test"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.4",
+    "@playwright/test": "1.63.0",
     "@types/node": "^24.19.2",
     "turbo": "^2.5.0",
     "typescript": "^7.0.2"
