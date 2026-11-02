@@ -18,7 +18,9 @@ services:
     memory_reservation: 256M
     node_modules_volume: fhir-node-modules
     validate: >-
-      Open https://launch.smarthealthit.org, set App Launch URL to
+      Run `pnpm e2e` through `werkmeister feature test` for this workspace and check the three
+      launch tests pass (patient with medications, patient without, launch.html with no iss/launch).
+      Manual fallback: open https://launch.smarthealthit.org, set App Launch URL to
       https://smart-app.{{local_domain}}/launch.html, click Launch, pick a patient, and check the
       page shows that patient's name and medications.
     feature_router: {}
