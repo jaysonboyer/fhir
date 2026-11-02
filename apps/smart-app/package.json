@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 5173",
-    "build": "vite build"
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome ci ."
   },
   "dependencies": {
     "fhirclient": "^2.6.0"

@@ -3,8 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --watch src/server.js",
-    "start": "node src/server.js",
-    "test": "node --test"
+    "dev": "node --watch src/server.ts",
+    "start": "node src/server.ts",
+    "test": "node --test",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome ci ."
   }
 }

@@ -1,4 +1,7 @@
-import { createServer } from "node:http";
+import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+
+// Only the Patient fields this service reads; every one can be missing (FHIR 0..*).
+type Patient = { name?: { given?: string[]; family?: string }[] };
 
 // CDS Hooks spec: https://cds-hooks.org — the EHR GETs /cds-services to discover what we offer,
 // then POSTs a hook request to /cds-services/<id> and renders the cards we return.
@@ -13,7 +16,7 @@ const services = [
   },
 ];
 
-export function greetingCards(patient) {
+export function greetingCards(patient: Patient | undefined) {
   const name = patient?.name?.[0];
   const display = [name?.given?.join(" "), name?.family].filter(Boolean).join(" ") || "there";
   return {
@@ -27,7 +30,7 @@ export function greetingCards(patient) {
   };
 }
 
-function send(res, status, body) {
+function send(res: ServerResponse, status: number, body?: unknown) {
   res.writeHead(status, {
     "Content-Type": "application/json",
     // The CDS Hooks sandbox calls us straight from the browser.
@@ -38,7 +41,7 @@ function send(res, status, body) {
   res.end(body === undefined ? undefined : JSON.stringify(body));
 }
 
-export function handler(req, res) {
+export function handler(req: IncomingMessage, res: ServerResponse) {
   if (req.method === "OPTIONS") return send(res, 204);
   if (req.method === "GET" && req.url === "/health") return send(res, 200, { ok: true });
   if (req.method === "GET" && req.url === "/cds-services") return send(res, 200, { services });
@@ -46,7 +49,7 @@ export function handler(req, res) {
     let raw = "";
     req.on("data", (chunk) => (raw += chunk));
     req.on("end", () => {
-      let hookRequest;
+      let hookRequest: { prefetch?: { patient?: Patient } };
       try {
         hookRequest = JSON.parse(raw);
       } catch {
