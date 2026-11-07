@@ -22,6 +22,12 @@ Or as a Werkmeister workspace (`werkmeister workspace new`, services `smart-app`
 [.werkmeister/services.yaml](.werkmeister/services.yaml); after editing it run
 `werkmeister registry sync`.
 
+## Interview crash course
+
+[crash-course/](crash-course/README.md) is a ten-day study plan for a FHIR technical
+interview: concepts, worked examples, exercises, a question bank and a mock interview.
+It uses the apps below as hands-on material.
+
 ## Learning path
 
 Docs hub: https://docs.smarthealthit.org/
