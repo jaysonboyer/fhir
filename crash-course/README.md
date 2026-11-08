@@ -51,6 +51,27 @@ recognizing it as correct is a different skill from producing the explanation yo
 | 9 | [Question bank with answers](09-question-bank.md) | Self-test for every module, plus a mock interview |
 | — | [Glossary](glossary.md) | Every term in this course, in one place |
 
+## How long it takes
+
+The full course takes about **20 to 30 hours**. That comes from the ten-day schedule
+below at two to three hours a day. The daily hours are an estimate chosen when the
+schedule was written, not a measurement of how long the material takes.
+
+| Material | Days | Approximate hours |
+|---|---|---|
+| Modules 1 and 2: what FHIR is, how a record is built | 2 | 4 to 6 |
+| Module 3: the web API and search | 2 | 4 to 6 |
+| Modules 4 to 8: one module per day | 5 | 10 to 15 |
+| Module 9: mock interview and re-study | 1 | 2 to 3 |
+
+- **If you are new to reading JSON and web requests**, expect to be near the upper end,
+  because the first four days are built around those skills.
+- **The repo exercises can add a few hours** if your computer does not already have the
+  developer tools needed to run the two apps. Every one of those exercises has a
+  browser-only alternative, so they can be skipped.
+- **The three-day schedule takes about 12 to 15 hours**, at four to five hours a day.
+  That is also an estimate.
+
 ## Ten-day schedule
 
 Each day is two to three hours. The last 20 minutes of every day are spent answering
@@ -71,7 +92,7 @@ the previous day's "check yourself" questions out loud, which spaces out your re
 
 ## Three-day schedule
 
-Use this only if the interview is very soon. It covers what interviewers ask about most
+Use this only if the interview is very soon. Each day is four to five hours. It covers what interviewers ask about most
 often, based on the topics that appear across interview-prep sources and the FHIR
 specification's own emphasis. That ranking is my judgment, not a measured fact.
 
