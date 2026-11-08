@@ -1,0 +1,9 @@
+{
+  "name": "cds-services-java",
+  "private": true,
+  "scripts": {
+    "dev": "./gradlew bootRun",
+    "build": "./gradlew bootJar",
+    "test": "./gradlew test"
+  }
+}

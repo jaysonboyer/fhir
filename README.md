@@ -7,12 +7,13 @@ pnpm + Turborepo monorepo; set up for [Werkmeister](../werkmeister) workspaces.
 |---|---|---|
 | [apps/smart-app](apps/smart-app) | Browser app that does a SMART EHR launch and reads the patient's data | SMART JS tutorial, Cerner SMART tutorial |
 | [apps/cds-services](apps/cds-services) | CDS Hooks service that returns cards to an EHR | Cerner CDS Services tutorial |
+| [apps/cds-services-java](apps/cds-services-java) | The same CDS Hooks service in Java / Spring Boot (needs JDK 25) | Cerner CDS Services tutorial |
 
 ## Run it
 
 ```bash
 pnpm install
-pnpm dev     # smart-app on http://localhost:5173, cds-services on http://localhost:3000
+pnpm dev     # smart-app on :5173, cds-services on :3000, cds-services-java on :3001
 pnpm test
 ```
 
@@ -68,6 +69,10 @@ registering the app in the Cerner code console to get a real `clientId` and redi
 
 Try it: `pnpm dev`, open https://sandbox.cds-hooks.org, **Settings > Add CDS Services**,
 enter `http://localhost:3000/cds-services`. The Patient View shows a "Hello …" card.
+
+[apps/cds-services-java](apps/cds-services-java/src/main/java/dev/fhirplayground/cds/CdsServicesApplication.java)
+is a line-for-line Spring Boot port; read it next to `server.ts`. Use
+`http://localhost:3001/cds-services` in the sandbox to try it.
 
 Exercises:
 - Add the tutorial's second service, on the `order-select` hook, that echoes the selected medication.

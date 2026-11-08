@@ -45,6 +45,25 @@ services:
       "Hello <patient>!" card appears on Patient View.
     feature_router: {}
 
+  cds-services-java:
+    path: apps/cds-services-java
+    type: api
+    # No Java archetype exists; test and validate are set here instead.
+    test: "cd apps/cds-services-java && ./gradlew test --console=plain"
+    internal_port: 3001
+    port_offset: 12
+    health_endpoint: /health
+    image: eclipse-temurin:25-jdk
+    # shortcut: no Gradle cache volume, so each container start re-downloads Gradle and deps; add one if startup gets annoying.
+    command: "cd apps/cds-services-java && exec ./gradlew bootRun --console=plain"
+    memory_limit: 1G
+    memory_reservation: 384M
+    validate: >-
+      GET https://cds-services-java.{{local_domain}}/cds-services lists patient-greeting; then add that
+      URL in https://sandbox.cds-hooks.org (Settings > Add CDS Services) and check the
+      "Hello <patient>!" card appears on Patient View.
+    feature_router: {}
+
 setup_services:
   fhir-install:
     image: node:24
