@@ -10,12 +10,15 @@ JSON or XML records and exchanges those records over web APIs.
 These assumptions shape the plan. If one is wrong, the "Adjusting the plan" section
 below says what to change.
 
-- **You have about two weeks.** The main schedule is ten study days of two to three
-  hours each. A three-day version is at the end of the schedule.
-- **The interview tests understanding, not production code.** Most FHIR interviews ask
-  you to explain how the standard works, read a JSON example, and talk through how you
-  would design an integration. The plan teaches you to read JSON and web requests, but
-  it does not require you to write software.
+- **You are an experienced software engineer who is new to FHIR.** You already know
+  REST, HTTP, OAuth 2.0 and JSON. The course still explains them in FHIR terms, so you
+  can skim those parts.
+- **The interview may include code and system design.** Expect to explain the standard,
+  read FHIR JSON, design an integration out loud, and possibly write code against a FHIR
+  API or a CDS Hooks request. Module 10 includes a coding track in this repo for that.
+- **The role builds products that run inside EHRs.** Module 10 covers running SMART
+  apps and CDS services in production across many health systems. If the role is
+  something else, see "Adjusting the plan".
 - **The job is in the United States.** US regulations decide which FHIR features
   companies actually build, so module 7 covers them. If the job is outside the US,
   skip most of module 7.
@@ -27,14 +30,14 @@ below says what to change.
 
 Every module has the same four parts, so you always know where you are.
 
-1. **Concepts.** The ideas, explained in plain language, each with what it rests on.
+1. **Concepts.** The ideas, each with what it rests on.
 2. **Read a real example.** A short JSON or HTTP example with every line explained.
-3. **Try it.** A hands-on exercise. Most need only a web browser.
+3. **Try it.** A hands-on exercise, in a browser or in this repo.
 4. **Check yourself.** Questions to answer out loud before you move on. The answers are
    in [09-question-bank.md](09-question-bank.md).
 
-Answering out loud matters because the interview is spoken. Reading an explanation and
-recognizing it as correct is a different skill from producing the explanation yourself.
+Answering out loud matters because the interview is spoken. Recognizing a correct
+explanation is a different skill from producing one under time pressure.
 
 ## The modules
 
@@ -49,78 +52,77 @@ recognizing it as correct is a different skill from producing the explanation yo
 | 7 | [The US regulatory landscape](07-us-regulations.md) | US Core, USCDI, ONC certification, CMS rules and TEFCA, with dated version facts |
 | 8 | [Architecture and design questions](08-architecture-and-design.md) | How to answer "design a system that..." questions |
 | 9 | [Question bank with answers](09-question-bank.md) | Self-test for every module, plus a mock interview |
+| 10 | [Running SMART apps and CDS services in production](10-ehr-embedded-production.md) | Multi-tenant configuration, EHR vendor differences, CDS Hooks security, ordering resources, go-lives, monitoring, and a coding track |
 | — | [Glossary](glossary.md) | Every term in this course, in one place |
 
 ## How long it takes
 
-The full course takes about **20 to 30 hours**. That comes from the ten-day schedule
-below at two to three hours a day. The daily hours are an estimate chosen when the
-schedule was written, not a measurement of how long the material takes.
+The full course takes about **17 to 27 hours**: about 11 to 17 hours of reading and
+exercises, plus about 6 to 10 hours for module 10's coding track. These are estimates
+for an experienced engineer, not measurements.
 
-| Material | Days | Approximate hours |
-|---|---|---|
-| Modules 1 and 2: what FHIR is, how a record is built | 2 | 4 to 6 |
-| Module 3: the web API and search | 2 | 4 to 6 |
-| Modules 4 to 8: one module per day | 5 | 10 to 15 |
-| Module 9: mock interview and re-study | 1 | 2 to 3 |
+| Material | Approximate hours |
+|---|---|
+| Modules 1 and 2: what FHIR is, how a record is built | 2 to 3 |
+| Module 3: skim the HTTP parts, focus on search, paging and transactions | 1.5 to 2 |
+| Module 4: profiles and terminology | 1.5 to 2 |
+| Modules 5 and 6: skim OAuth, focus on SMART specifics and CDS Hooks | 2 to 3 |
+| Module 10 reading | 1.5 to 2 |
+| Module 10 coding track | 6 to 10 |
+| Modules 7 and 8 | 2 to 3 |
+| Module 9 mock interview and re-study | 1 to 2 |
 
-- **If you are new to reading JSON and web requests**, expect to be near the upper end,
-  because the first four days are built around those skills.
-- **The repo exercises can add a few hours** if your computer does not already have the
-  developer tools needed to run the two apps. Every one of those exercises has a
-  browser-only alternative, so they can be skipped.
+- **The coding track is where the range is widest.** It depends on how far you take each
+  exercise. Exercises 1 and 2, the `order-select` service and JWT verification, give the
+  most interview value for the time.
 - **The three-day schedule takes about 12 to 15 hours**, at four to five hours a day.
-  That is also an estimate.
 
-## Ten-day schedule
+## Seven-day schedule
 
-Each day is two to three hours. The last 20 minutes of every day are spent answering
+Each day is about two to four hours. The last 20 minutes of every day are spent answering
 the previous day's "check yourself" questions out loud, which spaces out your review.
 
 | Day | Study | Hands-on |
 |---|---|---|
-| 1 | Module 1, then module 2 up to "data types" | Open a Patient record in the browser (module 2 exercise) |
-| 2 | Rest of module 2 | Read an Observation and label every field |
-| 3 | Module 3, sections on interactions and HTTP | Run read and search requests in the browser |
-| 4 | Module 3, search parameters, paging, `_include`, transactions | Build five search URLs from plain-language requests |
-| 5 | Module 4 | Look up a US Core profile and find its required elements |
-| 6 | Module 5 | Run the SMART launch in this repo, or follow it in the launcher's network log |
-| 7 | Module 6 | Read the CDS Hooks service in this repo and the sandbox's request and response |
-| 8 | Module 7 | Memorize the version table; practice the "why does FHIR matter right now" answer |
-| 9 | Module 8 | Talk through two design questions out loud with a timer |
-| 10 | Module 9 mock interview, then re-study whatever you could not answer | Record yourself answering; listen back |
+| 1 | Modules 1 and 2 | Read an Observation and label every field |
+| 2 | Modules 3 and 4 | Build the search URLs in module 3; find required elements in a US Core profile |
+| 3 | Modules 5 and 6 | Follow a SMART launch in the network log; read this repo's CDS service |
+| 4 | Module 10 reading | Coding track exercise 1: the `order-select` service |
+| 5 | Modules 7 and 8 | Coding track exercise 2: CDS client JWT verification |
+| 6 | Re-read module 10's failure table and testing strategy | Coding track exercises 3 to 6, as time allows |
+| 7 | Module 9 mock interview, then re-study whatever you could not answer | Record yourself answering; listen back |
 
 ## Three-day schedule
 
-Use this only if the interview is very soon. Each day is four to five hours. It covers what interviewers ask about most
-often, based on the topics that appear across interview-prep sources and the FHIR
-specification's own emphasis. That ranking is my judgment, not a measured fact.
+Use this only if the interview is very soon. Each day is four to five hours. It covers
+what interviews for EHR-embedded products ask about most, in my judgment. That ranking
+is not a measured fact.
 
 | Day | Study |
 |---|---|
-| 1 | Module 1, module 2, module 3 (skip transactions) |
-| 2 | Module 4 (skip slicing), module 5, the CDS Hooks and bulk data sections of module 6 |
+| 1 | Module 2, module 3 (search, paging, transactions), module 5 (SMART specifics) |
+| 2 | Module 6 (CDS Hooks section), module 10, coding track exercise 1 |
 | 3 | The version table in module 7, one design question from module 8, the mock interview in module 9 |
 
 ## Adjusting the plan
 
-- **If the job is a developer role**, add the "Try it" exercises that use this repo's
-  code in [apps/smart-app](../apps/smart-app) and [apps/cds-services](../apps/cds-services).
-  The [repo README](../README.md) explains how to run them.
-- **If the job is an analyst, product or implementation role**, spend less time on
-  module 3's HTTP details and more on modules 4 and 7, because those roles spend their
-  time on data mapping, codes and regulatory requirements.
+- **If the role builds a FHIR server or data platform** rather than apps that run inside
+  EHRs, swap module 10's coding track for work on server behavior: search parameter
+  indexing, transaction processing, versioning and bulk export. This course does not
+  cover server internals in depth.
+- **If the role is analyst, product or implementation work**, skip the coding track and
+  spend more time on modules 4 and 7, because those roles spend their time on data
+  mapping, codes and regulatory requirements.
 - **If the job is at a payer** (a health insurer), read the CMS section of module 7
   closely and add the Da Vinci implementation guides it names.
-- **If the job is at an EHR vendor or a hospital**, read module 5 and the ONC section of
-  module 7 closely.
 
 ## What was and was not verified
 
 - **Version and regulation facts** in module 7 were checked with web searches on
-  2026-11-07. Several official sites (hl7.org, healthit.gov, cms.gov) could not be
-  opened directly from the environment this course was written in, so those facts rest
-  on search-engine extracts of the official pages. Each fact in module 7 names its source.
+  2026-11-07. **Vendor and specification facts** in module 10 were checked on 2026-11-08.
+  Several official sites (hl7.org, healthit.gov, cms.gov) could not be opened directly
+  from the environment this course was written in, so those facts rest on search-engine
+  extracts of the official pages. Each such fact names its source.
 - **Explanations of how FHIR works** rest on the FHIR R4 specification, which has not
   changed since 2019 for the parts covered here. They were written from knowledge of
   that specification, not re-checked line by line. Every module links the specification

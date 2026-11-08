@@ -6,6 +6,8 @@ Each entry names the module where the term is explained in full.
 |---|---|---|
 | Access token | A string an app sends with each request to prove it has permission | 5 |
 | ADT message | An HL7 v2 message about admission, discharge or transfer | 8 |
+| Alert fatigue | Clinicians ignoring decision support because it shows too many alerts | 10 |
+| `appContext` | Extra context a CDS card link passes to the SMART app it launches | 10 |
 | ASTP/ONC | The US federal office that runs health IT certification | 7 |
 | Asynchronous request | A request that starts a job; the result is collected later | 6 |
 | Backend Services | The SMART flow for software with no user present | 5 |
@@ -17,8 +19,8 @@ Each entry names the module where the term is explained in full.
 | C-CDA | An XML document format for clinical summaries | 1 |
 | Canonical URL | A permanent web address identifying a profile, value set or other definition | 4 |
 | CapabilityStatement | A resource describing what a server supports | 3 |
-| Cardinality | How many times an element may appear, written `min..max` | 2 |
 | Card | A piece of advice returned by a CDS service | 6 |
+| Cardinality | How many times an element may appear, written `min..max` | 2 |
 | CDS Hooks | The HL7 standard for EHRs to call decision-support services at workflow points | 6 |
 | Chaining | Searching on an element of a referenced resource | 3 |
 | CMS | The US agency whose rules govern many payers | 7 |
@@ -33,6 +35,7 @@ Each entry names the module where the term is explained in full.
 | Da Vinci | A family of HL7 guides for payer–provider exchange | 4, 7 |
 | Differential / snapshot | A profile's changes only / the full computed result | 4 |
 | Discriminator | The element used to tell slices apart | 4 |
+| `draftOrders` / `selections` | The unsigned orders in a session / the ones just chosen, sent with order hooks | 10 |
 | EHR | Electronic health record system | 1 |
 | EHR launch | A SMART launch started from inside the EHR | 5 |
 | ETag / If-Match | HTTP headers used to prevent overwriting newer changes | 3 |
@@ -40,11 +43,14 @@ Each entry names the module where the term is explained in full.
 | FHIRPath | An expression language for selecting elements in resources | 3 |
 | FMM (maturity level) | A 0 to 5 rating of how tested a resource is | 1 |
 | FSH / SUSHI | A text language for writing profiles / the tool that compiles it | 4 |
+| Go-live | The day a health system turns a capability on for real clinicians | 10 |
 | Granular scope | A SMART v2 scope with a search filter added | 5 |
 | HL7 International | The organization that publishes FHIR and other health standards | 1 |
 | HL7 v2 | An older pipe-delimited message standard | 1 |
 | Hook | A defined workflow moment when an EHR calls a CDS service | 6 |
+| `hookInstance` | The unique ID of one CDS Hooks call, used for tracing | 10 |
 | HTI-1, HTI-5 | ONC rules (HTI-1 final; HTI-5 proposed) setting certification requirements | 7 |
+| Hyperdrive | Epic's web-based framework for its clinician application, with a browser allowlist | 10 |
 | `id` | The server's local key for a record | 2 |
 | Idempotent | Giving the same result when done more than once | 8 |
 | `identifier` | A real-world business identifier with an issuing `system` | 2 |
@@ -69,6 +75,7 @@ Each entry names the module where the term is explained in full.
 | Optimistic locking | Checking for conflicting changes at write time instead of locking | 3 |
 | Paging | Returning search results in pages linked by `next` | 3 |
 | PKCE | A technique that stops stolen authorization codes being used | 5 |
+| Placer / filler | The system that places an order / the one that fulfills it | 10 |
 | Prefetch | Data the EHR fetches for a CDS service before calling it | 6 |
 | Profile | A StructureDefinition that restricts a resource | 4 |
 | Public client | An app that cannot keep a secret, such as a browser app | 5 |
@@ -81,6 +88,7 @@ Each entry names the module where the term is explained in full.
 | `_revinclude` / `_include` | Add resources that point to / are pointed to by the results | 3 |
 | RxNorm | The US code system for medications | 4 |
 | Scope | A permission an app asks for, such as `patient/Observation.rs` | 5 |
+| SDC / `$populate` | HL7's forms guide / its operation that pre-fills a QuestionnaireResponse | 10 |
 | Slicing | Separate rules for different items in a list | 4 |
 | SMART App Launch | The HL7 guide for app authorization on FHIR | 5 |
 | SNOMED CT | A clinical terminology for findings, problems and procedures | 4 |
@@ -89,12 +97,14 @@ Each entry names the module where the term is explained in full.
 | StructureDefinition | The resource type that defines profiles and extensions | 4 |
 | Subscription / SubscriptionTopic | Mechanisms for servers to notify clients of changes | 6 |
 | SVAP | ONC's process allowing newer standard versions voluntarily | 7 |
+| Synthetic monitoring | Scripted checks run on a schedule to catch failures before users do | 10 |
 | TEFCA | The US national framework for exchange between networks | 7 |
+| Tenant | One customer, such as a health system, whose configuration is kept separate | 10 |
 | Terminology server | A FHIR server that answers questions about codes | 4 |
 | Transaction | A Bundle of requests that succeed or fail together | 3 |
 | UCUM | The code system for units of measure | 4 |
 | UDAP | Certificate-based security practices for app registration and authentication | 5 |
-| US Core | The US FHIR implementation guide for core clinical data | 7 |
 | USCDI | ONC's list of data elements that must be exchangeable | 7 |
+| US Core | The US FHIR implementation guide for core clinical data | 7 |
 | `value[x]` | A choice element whose JSON name includes the chosen type | 2 |
 | Value set | A selection of codes for a purpose | 4 |

@@ -24,9 +24,10 @@ Or as a Werkmeister workspace (`werkmeister workspace new`, services `smart-app`
 
 ## Interview crash course
 
-[crash-course/](crash-course/README.md) is a ten-day study plan for a FHIR technical
-interview: concepts, worked examples, exercises, a question bank and a mock interview.
-It uses the apps below as hands-on material.
+[crash-course/](crash-course/README.md) is a seven-day study plan for a FHIR technical
+interview, aimed at an experienced engineer: concepts, worked examples, a question bank,
+a mock interview, and a module on running SMART apps and CDS services in production
+with a coding track that extends the apps below.
 
 ## Learning path
 

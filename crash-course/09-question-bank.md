@@ -247,6 +247,50 @@ See the worked questions in module 8. The check-yourself answers:
 6. Server differences, patient matching, local codes, paging and rate limits, modifier
    elements, partial dates.
 
+## Module 10: Running SMART apps and CDS services in production
+
+**1. What varies per health system?**
+FHIR base URL, client IDs per environment, redirect URIs, keys, approved scopes,
+identifier systems, code mappings and feature flags. A wrong value breaks every launch at
+that site, so a configuration change carries the same risk as a code change.
+
+**2. How is the tenant identified?**
+SMART app: from `iss` at launch. CDS service: from the JWT's `iss` and optional `tenant`
+claim, and `fhirServer`. Both are looked up in configuration.
+
+**3. Why reject an unknown `iss`?**
+Otherwise anyone could launch the app against a server they control and receive the
+tokens and data the app sends there.
+
+**4. `order-select` versus `order-sign`?**
+`order-select` fires while the clinician is choosing orders and sends `selections`;
+`order-sign` fires at the final step. An eligibility suggestion fits `order-select`.
+
+**5. JWT checks?**
+Signature against the client's keys, `iss` and `jku` on an allowlist, `aud` equal to the
+endpoint URL, expiry, and `jti` replay. Return a generic error on failure.
+
+**6. Missing prefetch?**
+Fetch from `fhirServer` with `fhirAuthorization` if provided; otherwise return no cards.
+Never return an error for it.
+
+**7. Placer and filler?**
+The placer orders, usually the EHR; the filler fulfills, such as a lab. Each assigns an
+order number; keeping both lets status and results match the right order.
+
+**8. `$populate`?**
+Returns a QuestionnaireResponse pre-filled from data the server has. It saves clinicians
+from retyping data the EHR already holds.
+
+**9. Works in sandbox, fails at one site?**
+Redirect URI and client ID for that tenant and environment, approved scopes, browser
+allowlist domains and cookie needs, network rules, and the site's EHR version.
+
+**10. Monitoring and off switch?**
+Per tenant and hook: latency percentiles, errors, timeouts, card rate, acceptance rate,
+plus scheduled synthetic launches and hook calls. A per-tenant flag that returns no cards
+turns it off without waiting for the health system.
+
 ## Mock interview
 
 Run this as a timed session of about 45 minutes. Ask a friend to read the questions, or
