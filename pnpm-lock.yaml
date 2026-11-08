@@ -26,6 +26,8 @@ importers:
 
   apps/cds-services: {}
 
+  apps/cds-services-java: {}
+
   apps/smart-app:
     dependencies:
       fhirclient:
