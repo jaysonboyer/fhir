@@ -27,7 +27,7 @@ Or as a Werkmeister workspace (`werkmeister workspace new`, services `smart-app`
 
 ## Interview crash course
 
-[crash-course/](crash-course/README.md) is a seven-day study plan for a FHIR technical
+[docs/](docs/README.md) is a seven-day study plan for a FHIR technical
 interview, aimed at an experienced engineer: concepts, worked examples, a question bank,
 a mock interview, and a module on running SMART apps and CDS services in production
 with a coding track that extends the apps below.
@@ -80,7 +80,7 @@ Exercises:
 
 ### Crash course demos
 
-Self-contained demos for the [crash course](crash-course/README.md). No network needed (except
+Self-contained demos for the [crash course](docs/README.md). No network needed (except
 `validation`). Servers are fake, in-memory FHIR servers; each client prints every step. Start the server
 with `pnpm --filter <app> dev`, then run `pnpm --filter <app> demo` in a second terminal. Apps without a
 server only need `demo`.
