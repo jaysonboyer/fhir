@@ -62,6 +62,30 @@ permission for a specific population, not the whole server.
 Bulk export almost always uses SMART Backend Services (module 5) for authorization,
 because it runs without a user.
 
+```mermaid
+sequenceDiagram
+    participant Client as Bulk client
+    participant Auth as Authorization server
+    participant FHIR as FHIR server
+    participant Files as File server
+    Client->>Auth: Backend Services token request (signed JWT)
+    Auth-->>Client: access_token with system/ scopes
+    Client->>FHIR: GET [base]/Group/[id]/$export?_type=...<br/>Accept: application/fhir+json, Prefer: respond-async
+    FHIR-->>Client: 202 Accepted, Content-Location: status URL
+    loop While the export is running
+        Client->>FHIR: GET status URL
+        FHIR-->>Client: 202, optional Retry-After and X-Progress
+    end
+    Client->>FHIR: GET status URL
+    FHIR-->>Client: 200 OK, manifest (transactionTime, output, error)
+    loop For each file in output
+        Client->>Files: GET file URL (Bearer token if requiresAccessToken)
+        Files-->>Client: NDJSON, one resource per line
+    end
+    Client->>FHIR: DELETE status URL
+    FHIR-->>Client: 202 Accepted, files may be removed
+```
+
 ### Example manifest
 
 ```json
@@ -133,6 +157,30 @@ confirm from a primary source. Details are in module 7.
    more data).
 4. **Cards.** The service replies with `{ "cards": [...] }`. An empty list means no advice.
 
+```mermaid
+sequenceDiagram
+    actor Clin as Clinician
+    participant EHR
+    participant CDS as CDS service
+    participant FHIR as FHIR server
+    EHR->>CDS: GET [service base]/cds-services
+    CDS-->>EHR: services, each with hook, id, description, prefetch
+    Note over EHR,CDS: Discovery happens ahead of time, not on every hook
+    Clin->>EHR: Open a patient's chart (patient-view fires)
+    EHR->>FHIR: Run the prefetch templates, such as GET Patient/[id]
+    FHIR-->>EHR: Prefetched resources
+    EHR->>CDS: POST [service base]/cds-services/[id]<br/>hook, hookInstance, context, prefetch,<br/>fhirServer, fhirAuthorization
+    opt Data the prefetch did not cover
+        CDS->>FHIR: GET with the fhirAuthorization token
+        FHIR-->>CDS: Resources
+    end
+    CDS-->>EHR: cards (an empty list means no advice)
+    EHR->>Clin: Show the cards
+    opt Card has a SMART app link
+        Clin->>EHR: Click the link, and the EHR launches the app
+    end
+```
+
 ### What a card contains
 
 ```json
@@ -203,6 +251,50 @@ This is a good topic for showing you know version differences.
 A notification can carry the full changed resource, only its ID, or nothing (the client
 then searches), depending on the `payload` setting. Sending IDs only is common for privacy.
 
+The R4 rest-hook flow:
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Hook as Client's rest-hook endpoint
+    participant FHIR as FHIR server
+    participant Source as Lab system
+    Client->>FHIR: POST Subscription, status requested<br/>criteria: Observation?code=http://loinc.org|4548-4<br/>channel: rest-hook, endpoint, optional payload
+    FHIR-->>Client: 201 Created
+    Note over FHIR: The server accepts it and sets status to active
+    Source->>FHIR: POST Observation (a new HbA1c result)
+    Note over FHIR: Check the new resource against each active criteria
+    alt No payload set
+        FHIR->>Hook: POST with an empty body
+        Client->>FHIR: GET Observation?code=... to find what changed
+        FHIR-->>Client: searchset Bundle
+    else payload is application/fhir+json
+        FHIR->>Hook: POST with the changed resource
+    end
+    Note over FHIR,Hook: If the endpoint fails, status becomes error
+```
+
+The topic-based flow from the R5 Backport, on an R4 server:
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Hook as Client's rest-hook endpoint
+    participant FHIR as FHIR server
+    participant Source as Lab system
+    Client->>FHIR: GET [base]/metadata
+    FHIR-->>Client: CapabilityStatement listing supported topic canonicals
+    Client->>FHIR: POST Subscription<br/>criteria: topic canonical, filter-criteria extension,<br/>channel rest-hook, payload content id-only
+    FHIR->>Hook: Handshake Bundle
+    Hook-->>FHIR: 200 OK
+    FHIR-->>Client: 201 Created, status active
+    Source->>FHIR: POST Observation (a new HbA1c result)
+    Note over FHIR: Topic fires, filter matches
+    FHIR->>Hook: history Bundle: Parameters subscription-status<br/>type event-notification, event number, focus reference
+    Client->>FHIR: GET the focus reference, such as Observation/[id]
+    FHIR-->>Client: The Observation
+```
+
 ## Part 4: Other exchange patterns, briefly
 
 - **Messaging.** A Bundle of type `message` whose first entry is a MessageHeader, sent
@@ -220,6 +312,14 @@ the searches recorded in module 7, version 2 is still a draft (2.1.0-pre), not a
 publication. Mentioning it shows awareness of how FHIR data is analyzed at scale, which
 often comes up with bulk data.
 
+```mermaid
+flowchart LR
+    N[NDJSON from a bulk export] --> R[ViewDefinition runner]
+    VD[ViewDefinition:<br/>resource, select columns as FHIRPath,<br/>forEach, where] --> R
+    R --> T[Flat table, one row per resource or per forEach item]
+    T --> SQL[Load into a database and join with SQL]
+```
+
 ## Read a real example
 
 Read this repo's CDS service in
@@ -231,6 +331,10 @@ Read this repo's CDS service in
 - the CORS headers (permission headers that let a web page on another site call the
   service), which the CDS Hooks sandbox needs because it runs in a browser.
 
+If you work in Java, the same service is ported to Spring Boot in
+[CdsServicesApplication.java](../apps/cds-services-java/src/main/java/dev/fhirplayground/cds/CdsServicesApplication.java).
+It runs on port 3001 and needs JDK 25.
+
 ## Try it
 
 1. Open https://sandbox.cds-hooks.org. Watch the request and response panes on the
@@ -239,6 +343,26 @@ Read this repo's CDS service in
    service to the sandbox.
 3. On paper, write the kick-off request for a Group-level export of Patient, Condition
    and Observation records changed since 1 October 2026.
+4. Watch a bulk export run: start
+   [apps/bulk-export](../apps/bulk-export/src/server.ts) with `pnpm --filter bulk-export dev`,
+   then run `pnpm --filter bulk-export demo` in a second terminal. The client prints each
+   step of Part 1's flow: kick-off, `202` polls with `Retry-After`, the manifest, the
+   NDJSON files and the `DELETE`. Before the export it gets a token with SMART Backend Services (module 5): it
+   prints the signed JWT and every request sends the Bearer token. Patient p3 is not in
+   the Group, so p3's records are not exported.
+5. Watch a subscription fire: start
+   [apps/subscriptions](../apps/subscriptions/src/server.ts) with
+   `pnpm --filter subscriptions dev`, then run `pnpm --filter subscriptions demo`. The
+   client subscribes to HbA1c results with a `rest-hook` channel, then creates one heart
+   rate Observation and one HbA1c Observation. Only the HbA1c triggers a notification.
+   The client asked for no `payload`, so the notification has an empty body and the
+   client searches for the new record. That is the R4 criteria style. Run
+   `pnpm --filter subscriptions demo:topic` for the R5 Backport topic style: the client
+   finds the topic in `/metadata`, receives a handshake, and gets an `id-only`
+   notification Bundle whose `focus` points at the new Observation.
+6. Flatten the export: `pnpm --filter sql-on-fhir demo` runs two ViewDefinitions in
+   [apps/sql-on-fhir](../apps/sql-on-fhir/views) over the bulk export's NDJSON and
+   prints the tables, then joins Observations to Patients.
 
 Answer for step 3:
 

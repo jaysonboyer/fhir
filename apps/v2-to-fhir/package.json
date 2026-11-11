@@ -1,0 +1,11 @@
+{
+  "name": "v2-to-fhir",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "demo": "node src/demo.ts",
+    "test": "node --test",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome ci ."
+  }
+}

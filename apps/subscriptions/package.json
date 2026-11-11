@@ -1,0 +1,14 @@
+{
+  "name": "subscriptions",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.ts",
+    "start": "node src/server.ts",
+    "demo": "node src/client.ts",
+    "demo:topic": "node src/topic-client.ts",
+    "test": "node --test",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome ci ."
+  }
+}

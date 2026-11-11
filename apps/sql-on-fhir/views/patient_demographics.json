@@ -1,0 +1,18 @@
+{
+  "resourceType": "ViewDefinition",
+  "name": "patient_demographics",
+  "status": "draft",
+  "resource": "Patient",
+  "select": [
+    {
+      "column": [{ "name": "id", "path": "getResourceKey()", "type": "id" }]
+    },
+    {
+      "forEach": "name.first()",
+      "column": [
+        { "name": "family", "path": "family", "type": "string" },
+        { "name": "given", "path": "given.join(' ')", "type": "string" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "resourceType": "ViewDefinition",
+  "name": "observation_values",
+  "status": "draft",
+  "resource": "Observation",
+  "constant": [{ "name": "loinc", "valueUri": "http://loinc.org" }],
+  "where": [{ "path": "status = 'final'" }],
+  "select": [
+    {
+      "column": [
+        { "name": "id", "path": "getResourceKey()", "type": "id" },
+        { "name": "patient_id", "path": "subject.getReferenceKey(Patient)", "type": "id" },
+        { "name": "value", "path": "value.ofType(Quantity).value", "type": "decimal" },
+        { "name": "unit", "path": "value.ofType(Quantity).unit", "type": "string" }
+      ]
+    },
+    {
+      "forEach": "code.coding.where(system = %loinc)",
+      "column": [
+        { "name": "loinc_code", "path": "code", "type": "code" },
+        { "name": "display", "path": "display", "type": "string" }
+      ]
+    }
+  ]
+}

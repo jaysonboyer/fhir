@@ -24,9 +24,23 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
 
+  apps/bulk-export: {}
+
   apps/cds-services: {}
 
   apps/cds-services-java: {}
+
+  apps/cerner-smart-app:
+    dependencies:
+      fhirclient:
+        specifier: ^2.6.0
+        version: 2.6.3(@types/node@26.6.6)(expo@58.0.22)(react-native@0.88.1(@babel/core@7.29.7)(react@19.3.1))
+    devDependencies:
+      vite:
+        specifier: ^7.0.0
+        version: 7.3.7(@types/node@26.6.6)(lightningcss@1.33.0)(terser@5.51.2)
+
+  apps/rest-semantics: {}
 
   apps/smart-app:
     dependencies:
@@ -37,6 +51,14 @@ importers:
       vite:
         specifier: ^7.0.0
         version: 7.3.7(@types/node@26.6.6)(lightningcss@1.33.0)(terser@5.51.2)
+
+  apps/sql-on-fhir: {}
+
+  apps/subscriptions: {}
+
+  apps/v2-to-fhir: {}
+
+  apps/validation: {}
 
 packages:
 

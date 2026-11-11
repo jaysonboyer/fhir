@@ -121,6 +121,22 @@ ADT messages) and lab result messages (ORU). We need FHIR resources on a FHIR se
 update can overwrite a newer one. Either process per patient in order, or compare message
 timestamps before writing.
 
+```mermaid
+flowchart LR
+    S[Hospital system] -->|v2 ADT and ORU| E[Interface engine]
+    E --> P[Parse segments and fields]
+    P --> M[Map to Patient, Encounter,<br/>Observation, DiagnosticReport]
+    CM[ConceptMap: local codes to LOINC] --> M
+    M --> B[Transaction Bundle with<br/>conditional writes on identifiers]
+    B --> F[FHIR server]
+    M -->|mapping or validation fails| Q[Error queue for review]
+```
+
+[apps/v2-to-fhir](../apps/v2-to-fhir/src/convert.ts) implements the parse and map steps
+for one ORU message: `pnpm --filter v2-to-fhir demo`. It uses conditional create
+(`ifNoneExist`) on the MRN rather than conditional update.
+
+
 ## Worked question 4: prior authorization inside the EHR
 
 Module 7 gives the answer outline: CRD at order time through CDS Hooks, DTR as a SMART app

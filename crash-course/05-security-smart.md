@@ -63,6 +63,27 @@ This is the flow the repo's app implements. The file names refer to
    See [app.ts](../apps/smart-app/src/app.ts).
 7. **FHIR requests.** The app calls the FHIR server with the access token.
 
+```mermaid
+sequenceDiagram
+    actor User as Clinician
+    participant EHR
+    participant App as SMART app
+    participant Auth as Authorization server
+    participant FHIR as FHIR server
+    User->>EHR: Open the app from the patient's chart
+    EHR->>App: Open launch page with iss and launch
+    App->>FHIR: GET [iss]/.well-known/smart-configuration
+    FHIR-->>App: authorization_endpoint, token_endpoint, capabilities
+    App->>Auth: Redirect browser to authorization_endpoint<br/>response_type=code, client_id, redirect_uri, scope,<br/>launch, state, aud, code_challenge
+    Auth->>User: Login and approval (often skipped in an EHR launch)
+    Auth-->>App: Redirect to redirect_uri with code and state
+    Note over App: Check state matches what was sent
+    App->>Auth: POST token_endpoint<br/>code, redirect_uri, client_id, code_verifier
+    Auth-->>App: access_token, expires_in, scope, patient,<br/>encounter, id_token, refresh_token
+    App->>FHIR: GET Patient/[patient] with Authorization: Bearer token
+    FHIR-->>App: Patient resource
+```
+
 ### The standalone launch
 
 In a **standalone launch**, the user opens the app directly, outside the EHR, for example
@@ -70,6 +91,24 @@ a patient opening a health app on a phone. There is no `launch` parameter. The a
 already knows which server to use, and asks for the scope `launch/patient` so that the
 server shows a patient picker (or, for a patient user, uses their own record). The rest of
 the flow is the same.
+
+```mermaid
+sequenceDiagram
+    actor User as Patient or clinician
+    participant App as SMART app
+    participant Auth as Authorization server
+    participant FHIR as FHIR server
+    User->>App: Open the app directly, outside any EHR
+    Note over App: The app already knows the FHIR base URL. There is no launch parameter.
+    App->>FHIR: GET [base]/.well-known/smart-configuration
+    FHIR-->>App: authorization_endpoint, token_endpoint
+    App->>Auth: Redirect with scope launch/patient, state, aud, code_challenge
+    Auth->>User: Login, patient picker, approval
+    Auth-->>App: Redirect with code and state
+    App->>Auth: POST token_endpoint with code and code_verifier
+    Auth-->>App: access_token and patient
+    App->>FHIR: FHIR requests with Bearer token
+```
 
 ### Public and confidential clients
 
@@ -152,6 +191,27 @@ Services**, defined in the same guide, handles this:
 
 There is no browser, no user and no refresh token; the service requests a new token when
 the old one expires. Bulk data export (module 6) normally uses this flow.
+
+```mermaid
+sequenceDiagram
+    participant Svc as Backend service
+    participant Auth as Authorization server
+    participant FHIR as FHIR server
+    Note over Svc,Auth: Ahead of time: register client_id and public key (JWKS)
+    Svc->>Auth: GET [base]/.well-known/smart-configuration
+    Auth-->>Svc: token_endpoint, supported signing algorithms
+    Note over Svc: Sign a JWT with the private key<br/>iss = sub = client_id, aud = token_endpoint,<br/>exp within 5 minutes, unique jti
+    Svc->>Auth: POST token_endpoint<br/>grant_type=client_credentials, scope=system/...,<br/>client_assertion_type=...jwt-bearer, client_assertion=JWT
+    Note over Auth: Verify signature with the registered key,<br/>check aud, exp and jti not reused
+    Auth-->>Svc: access_token, expires_in, granted system/ scopes
+    Svc->>FHIR: Requests with Authorization: Bearer token
+    Note over Svc: No refresh token. Sign a new JWT when the token expires.
+```
+
+[apps/bulk-export](../apps/bulk-export/src/client.ts) runs this flow before its export:
+the client makes a key pair, signs the JWT and prints its header and claims, then sends
+the token on every export request. Run it with the module 6 "Try it" steps.
+
 
 ### Other security topics interviewers raise
 

@@ -45,6 +45,7 @@ Each entry names the module where the term is explained in full.
 | FSH / SUSHI | A text language for writing profiles / the tool that compiles it | 4 |
 | Go-live | The day a health system turns a capability on for real clinicians | 10 |
 | Granular scope | A SMART v2 scope with a search filter added | 5 |
+| GraphQL (`$graphql`) | FHIR's optional GraphQL interface: choose fields and follow references in one query | 3 |
 | HL7 International | The organization that publishes FHIR and other health standards | 1 |
 | HL7 v2 | An older pipe-delimited message standard | 1 |
 | Hook | A defined workflow moment when an EHR calls a CDS service | 6 |

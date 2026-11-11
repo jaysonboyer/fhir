@@ -162,6 +162,14 @@ What to notice:
 2. Open https://hl7.org/fhir/R4/patient.html and click each tab listed above.
 3. On the Patient page, find the maturity level and the word "Normative" near the top.
 
+### Run it in this repo
+
+[apps/v2-to-fhir](../apps/v2-to-fhir/src/convert.ts) converts the `PID` segment above,
+inside a lab result message, into a FHIR transaction Bundle. Run
+`pnpm --filter v2-to-fhir demo` and it prints each change: position to named field, date
+format, MRN to `identifier.system`, and a local lab code mapped to LOINC (plus one it
+cannot map). Module 8, worked question 3, covers the design around it.
+
 ## Check yourself
 
 1. In two sentences, what is FHIR?

@@ -1,0 +1,11 @@
+{
+  "name": "validation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "demo": "node src/validate.ts",
+    "test": "node --test",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome ci ."
+  }
+}

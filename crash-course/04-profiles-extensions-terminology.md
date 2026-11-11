@@ -182,6 +182,15 @@ many servers expose `$validate`. A validator checks cardinality, types, bindings
 invariants and slices. Mentioning that you would validate example data against the
 target profiles early in a project is a good practical answer.
 
+```mermaid
+flowchart LR
+    R[Resource JSON] --> V[HL7 FHIR validator]
+    P[Profile, such as US Core Patient] --> V
+    IG[IG package, such as hl7.fhir.us.core] --> V
+    TX[Terminology server] --> V
+    V --> O[OperationOutcome: errors, warnings, information]
+```
+
 ### How implementation guides are written
 
 Most IGs today are written in **FHIR Shorthand (FSH)**, a short text language for
@@ -233,6 +242,14 @@ Then write one sentence for each answering "what would a server have to do to co
    discriminator.
 3. On https://hl7.org/fhir/R4/valueset-observation-status.html, list the codes and decide
    which ones a lab-results display should hide.
+
+### Run it in this repo
+
+[apps/validation](../apps/validation/src/validate.ts) runs the official HL7 validator
+against one Patient that conforms to US Core and one with deliberate errors (no
+identifier, a `gender` of `F`, a v2-style birth date, a malformed race extension). Run
+`pnpm --filter validation demo`. It needs Java and downloads the validator (about 200 MB)
+and the US Core package on first run.
 
 ## Check yourself
 

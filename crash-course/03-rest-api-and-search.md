@@ -1,7 +1,7 @@
 # Module 3: The REST API and search
 
 Specification to check against: https://hl7.org/fhir/R4/http.html and
-https://hl7.org/fhir/R4/search.html
+https://hl7.org/fhir/R4/search.html (GraphQL: https://hl7.org/fhir/R4/graphql.html)
 
 ## Concepts
 
@@ -73,6 +73,22 @@ version it last saw in an `If-Match` header with its `PUT`. If the record change
 the server rejects the update with 412 Precondition Failed. This technique is called
 **optimistic locking**: the client does not lock the record, it checks for conflicts when
 it writes.
+
+```mermaid
+sequenceDiagram
+    participant A as Client A
+    participant B as Client B
+    participant FHIR as FHIR server
+    A->>FHIR: GET Patient/1
+    FHIR-->>A: 200, ETag: W/"1"
+    B->>FHIR: GET Patient/1
+    FHIR-->>B: 200, ETag: W/"1"
+    A->>FHIR: PUT Patient/1, If-Match: W/"1"
+    FHIR-->>A: 200, ETag: W/"2"
+    B->>FHIR: PUT Patient/1, If-Match: W/"1"
+    FHIR-->>B: 412 Precondition Failed, version conflict
+    Note over B: Read the new version, merge, and try again
+```
 
 ### Conditional interactions
 
@@ -225,6 +241,17 @@ interview question:
 Use a transaction when records depend on each other, such as a new Patient and the
 Observations about that patient.
 
+```mermaid
+flowchart TD
+    B[POST base with a Bundle] --> T{Bundle.type}
+    T -->|transaction| TX[Process all entries as one unit]
+    TX --> TOK{Every entry succeeds?}
+    TOK -->|yes| TC[Commit all. urn:uuid references become real ids.<br/>200 transaction-response]
+    TOK -->|no| TR[Roll back everything.<br/>4xx with an OperationOutcome]
+    T -->|batch| BA[Process each entry on its own]
+    BA --> BR[200 batch-response with a status per entry.<br/>Failed entries do not undo the others]
+```
+
 ### Operations
 
 Some actions do not fit read, write and search. FHIR defines **operations** for these,
@@ -245,6 +272,62 @@ written with a `$` in the address. The ones to recognize:
 example `Patient.name.where(use='official').family`. You will see it in profile rules,
 in search parameter definitions and in tools. You only need to recognize it and read
 simple expressions.
+
+### GraphQL
+
+FHIR also defines a **GraphQL** interface. It is trial use (not normative) and optional,
+and support varies: HAPI has it, but most EHR vendor APIs do not, and US certification
+requires the REST API, not GraphQL. Check the CapabilityStatement for a `$graphql`
+operation before relying on it.
+
+It is exposed as an operation, at two levels:
+
+- `[base]/$graphql`: queries across the whole server.
+- `[base]/Patient/123/$graphql`: queries starting from one resource.
+
+The query goes in `?query=` on a GET, or in the body of a POST. The schema is generated
+from the resource definitions, so field names are FHIR element names. The rules to know:
+
+| Write | Means |
+|---|---|
+| `Patient(id: "123")` | Read one resource |
+| `PatientList(name: "smith")` | Search; arguments are search parameters, with `-` written as `_` |
+| `name(use: official)` | Filter a list element by the value of one of its fields |
+| `subject { resource { ... on Patient { id } } }` | Follow a reference to the record it points to |
+| `ObservationList(_reference: patient)` | Inside a resource: the Observations that point to it, the GraphQL `_revinclude` |
+| `PatientConnection(...)` | Search with cursor paging instead of a plain list |
+| `@flatten`, `@first`, `@singleton` | Directives that reshape the output |
+
+A shortened example: a patient's official name and their five latest blood pressures,
+in one request.
+
+```graphql
+{
+  Patient(id: "123") {
+    name(use: official) { given family }
+    ObservationList(_reference: patient, code: "http://loinc.org|85354-9",
+                    _sort: "-date", _count: 5) {
+      effectiveDateTime
+      component { code { text } valueQuantity { value unit } }
+    }
+  }
+}
+```
+
+The response is ordinary GraphQL JSON (`{"data": ...}`, with an `errors` list on
+failure), not a Bundle, and it holds only the fields asked for.
+
+The trade-offs, which is what interviewers ask about:
+
+- **For:** one round trip in place of a read plus `_include`, `_revinclude` and
+  `_elements`, and smaller payloads. That suits mobile apps and UI screens.
+- **Against:** optional and unevenly supported. POST queries do not cache the way plain
+  GET reads do. Arbitrary nested queries are harder for the server to plan and to limit.
+  The output is not valid FHIR resources, so validators and FHIR libraries do not apply.
+  It is no help for large exports; use Bulk Data (module 6).
+- **Unchanged:** security. SMART scopes still decide what the token may read, and the
+  server must apply them to every resource the query reaches, including references it
+  follows.
 
 ## Read a real example
 
@@ -309,6 +392,16 @@ Encounter?patient.name=smith
 The fourth line uses reverse chaining. Servers differ in how well they support `_has`,
 so it may not work on every server; the CapabilityStatement says whether it is supported.
 
+### Run it in this repo
+
+The public server above is read-only practice. To see writes,
+[apps/rest-semantics](../apps/rest-semantics/src/server.ts) is a small local server:
+start it with `pnpm --filter rest-semantics dev` and run `pnpm --filter rest-semantics demo`.
+The client prints each step: create with `ETag`, conditional create that finds the
+existing record, update, a stale `If-Match` rejected with `412`, a transaction whose
+`urn:uuid` references become real ids, a failing transaction rolled back, a batch with
+one success and one failure, and paging by following `next` links.
+
 ## Check yourself
 
 1. List the main interactions and the HTTP method for each.
@@ -321,3 +414,4 @@ so it may not work on every server; the CapabilityStatement says whether it is s
 8. Why must a client follow `next` links?
 9. What is the difference between a batch and a transaction?
 10. Name three operations and what they do.
+11. What does FHIR GraphQL give you over REST search, and why is it rarely the default?
