@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Cerner SMART App</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 2rem; }
+      th { text-align: left; padding-right: 2rem; }
+      #errors { color: #b00020; }
+    </style>
+  </head>
+  <body>
+    <h1>SMART on FHIR Starter App (Cerner tutorial)</h1>
+    <p id="errors"></p>
+    <p id="loading">Loading…</p>
+    <div id="holder" hidden>
+      <h2>Patient</h2>
+      <table>
+        <tr><th>First name</th><td id="fname"></td></tr>
+        <tr><th>Last name</th><td id="lname"></td></tr>
+        <tr><th>Gender</th><td id="gender"></td></tr>
+        <tr><th>Date of birth</th><td id="birthdate"></td></tr>
+        <tr><th>Age</th><td id="age"></td></tr>
+      </table>
+      <h2>Observations (latest)</h2>
+      <table>
+        <tr><th>Height</th><td id="height"></td></tr>
+        <tr><th>Systolic BP</th><td id="systolicbp"></td></tr>
+        <tr><th>Diastolic BP</th><td id="diastolicbp"></td></tr>
+        <tr><th>LDL</th><td id="ldl"></td></tr>
+        <tr><th>HDL</th><td id="hdl"></td></tr>
+      </table>
+    </div>
+    <script type="module" src="/src/app.ts"></script>
+  </body>
+</html>
