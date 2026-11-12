@@ -52,6 +52,8 @@ importers:
         specifier: ^7.0.0
         version: 7.3.7(@types/node@26.6.6)(lightningcss@1.33.0)(terser@5.51.2)
 
+  apps/smart-auth: {}
+
   apps/sql-on-fhir: {}
 
   apps/subscriptions: {}

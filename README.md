@@ -9,14 +9,15 @@ pnpm + Turborepo monorepo; set up for [Werkmeister](../werkmeister) workspaces.
 | [apps/cerner-smart-app](apps/cerner-smart-app) | The Cerner tutorial's app: patient table plus latest height, BP, LDL, HDL; EHR and standalone patient launch | Cerner SMART tutorial |
 | [apps/cds-services](apps/cds-services) | CDS Hooks service that returns cards to an EHR | Cerner CDS Services tutorial |
 | [apps/cds-services-java](apps/cds-services-java) | The same CDS Hooks service in Java / Spring Boot (needs JDK 25) | Cerner CDS Services tutorial |
-| [apps/bulk-export](apps/bulk-export), [apps/subscriptions](apps/subscriptions), [apps/rest-semantics](apps/rest-semantics), [apps/v2-to-fhir](apps/v2-to-fhir), [apps/validation](apps/validation), [apps/sql-on-fhir](apps/sql-on-fhir) | Small demos of common FHIR patterns; see [Crash course demos](#crash-course-demos) | Crash course |
+| [apps/bulk-export](apps/bulk-export), [apps/subscriptions](apps/subscriptions), [apps/rest-semantics](apps/rest-semantics), [apps/smart-auth](apps/smart-auth), [apps/v2-to-fhir](apps/v2-to-fhir), [apps/validation](apps/validation), [apps/sql-on-fhir](apps/sql-on-fhir) | Small demos of common FHIR patterns; see [Crash course demos](#crash-course-demos) | Crash course |
 
 ## Run it
 
 ```bash
 pnpm install
 pnpm dev     # smart-app on :5173, cerner-smart-app on :5174, cds-services on :3000, cds-services-java on :3001,
-             # bulk-export on :3002, subscriptions on :3003, rest-semantics on :3004
+             # bulk-export on :3002, subscriptions on :3003, rest-semantics on :3004,
+             # smart-auth on :3005
 pnpm test
 ```
 
@@ -90,6 +91,7 @@ server only need `demo`.
 | `v2-to-fhir` (no server) | 1, 8 | HL7 v2 ORU message to a FHIR transaction Bundle, local codes to LOINC |
 | `rest-semantics` | 3 | ETag/If-Match conflicts, conditional create, transaction vs batch, paging |
 | `validation` (no server) | 4 | Official HL7 validator on a good and a bad US Core Patient (needs Java; downloads ~200 MB) |
+| `smart-auth` | 5 | EHR launch offline: PKCE, `state`, token response, `id_token` check, denied scope, refresh |
 | `bulk-export` | 5, 6 | SMART Backend Services token, then Group `$export`: poll, manifest, NDJSON, cleanup |
 | `subscriptions` | 6 | R4 criteria `rest-hook` (`demo`) and R5 Backport topic-based (`demo:topic`) notifications |
 | `sql-on-fhir` (no server) | 6 | ViewDefinitions flattening bulk NDJSON into tables |

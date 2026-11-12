@@ -269,6 +269,14 @@ environment this course was written in.
 4. If you can run this repo, follow the steps in the repo [README](../README.md) section
    "SMART app launch" and do its exercises, which include removing a scope and seeing
    what fails.
+5. Watch the whole EHR launch offline: start
+   [apps/smart-auth](../apps/smart-auth/src/server.ts) with `pnpm --filter smart-auth dev`,
+   then run `pnpm --filter smart-auth demo`. The client prints each step of the diagram
+   above: the launch redirect, discovery, PKCE, the `state` check, the token response,
+   checking the `id_token` signature against the server's keys, and FHIR calls. The fake
+   user denies `patient/MedicationRequest.rs`, so you see the granted scope come back
+   smaller than requested and the server return `403`. It also shows a reused code
+   rejected and a refresh token exchanged for a new access token.
 
 ## Check yourself
 
