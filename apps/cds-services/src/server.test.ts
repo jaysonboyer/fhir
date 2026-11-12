@@ -49,3 +49,28 @@ test("health, CORS preflight, 404 and unnamed patient", async (t) => {
   });
   assert.equal((await unnamed.json()).cards[0].summary, "Hello there!");
 });
+
+test("order-select and order-sign stubs list the draft orders", async (t) => {
+  const server = createServer(handler).listen(0);
+  t.after(() => server.close());
+  await new Promise((r) => server.once("listening", r));
+  const base = `http://localhost:${(server.address() as AddressInfo).port}`;
+
+  const hooks = (await (await fetch(`${base}/cds-services`)).json()).services.map((s: { hook: string }) => s.hook);
+  assert.deepEqual(hooks, ["patient-view", "order-select", "order-sign"]);
+
+  const draftOrders = {
+    resourceType: "Bundle",
+    entry: [
+      { resource: { resourceType: "MedicationRequest", medicationCodeableConcept: { text: "Niacin 20 MG" } } },
+      { resource: { resourceType: "ServiceRequest", code: { coding: [{ display: "CT head" }] } } },
+    ],
+  };
+  const res = await fetch(`${base}/cds-services/order-sign-echo`, {
+    method: "POST",
+    body: JSON.stringify({ hook: "order-sign", context: { draftOrders } }),
+  });
+  const card = (await res.json()).cards[0];
+  assert.equal(card.summary, "order-sign: 2 draft order(s)");
+  assert.equal(card.detail, "MedicationRequest: Niacin 20 MG\nServiceRequest: CT head");
+});

@@ -14,7 +14,44 @@ const services = [
     // The EHR fetches this before calling us and sends it in request.prefetch.patient.
     prefetch: { patient: "Patient/{{context.patientId}}" },
   },
+  // Stubs that echo the order hooks, so the sandbox's Rx View, Rx Sign and PAMA Imaging tabs call us.
+  {
+    hook: "order-select",
+    id: "order-select-echo",
+    title: "Order select echo",
+    description: "Lists the draft orders the clinician is picking (fires while the order is still being built).",
+  },
+  {
+    hook: "order-sign",
+    id: "order-sign-echo",
+    title: "Order sign echo",
+    description: "Lists the draft orders about to be signed (the last chance to change them).",
+  },
 ];
+
+// Just the fields we read from a draft MedicationRequest or ServiceRequest in context.draftOrders.
+type Concept = { text?: string; coding?: { display?: string; code?: string }[] };
+type DraftOrders = {
+  entry?: { resource?: { resourceType?: string; medicationCodeableConcept?: Concept; code?: Concept } }[];
+};
+
+export function orderCards(hook: string, draftOrders: DraftOrders | undefined) {
+  const orders = (draftOrders?.entry ?? []).map(({ resource: r }) => {
+    const concept = r?.medicationCodeableConcept ?? r?.code;
+    return `${r?.resourceType}: ${concept?.text ?? concept?.coding?.[0]?.display ?? concept?.coding?.[0]?.code ?? "?"}`;
+  });
+  const summary = `${hook}: ${orders.length} draft order(s)`;
+  return {
+    cards: [
+      {
+        summary,
+        detail: orders.join("\n") || "No draft orders in context.",
+        indicator: hook === "order-sign" ? "warning" : "info",
+        source: { label: "fhir playground CDS service" },
+      },
+    ],
+  };
+}
 
 export function greetingCards(patient: Patient | undefined) {
   const name = patient?.name?.[0];
@@ -45,17 +82,22 @@ export function handler(req: IncomingMessage, res: ServerResponse) {
   if (req.method === "OPTIONS") return send(res, 204);
   if (req.method === "GET" && req.url === "/health") return send(res, 200, { ok: true });
   if (req.method === "GET" && req.url === "/cds-services") return send(res, 200, { services });
-  if (req.method === "POST" && req.url === "/cds-services/patient-greeting") {
+  const service = services.find((s) => req.method === "POST" && req.url === `/cds-services/${s.id}`);
+  if (service) {
     let raw = "";
     req.on("data", (chunk) => (raw += chunk));
     req.on("end", () => {
-      let hookRequest: { prefetch?: { patient?: Patient } };
+      let hookRequest: { hook?: string; context?: { draftOrders?: DraftOrders }; prefetch?: { patient?: Patient } };
       try {
         hookRequest = JSON.parse(raw);
       } catch {
         return send(res, 400, { error: "body must be JSON" });
       }
-      send(res, 200, greetingCards(hookRequest.prefetch?.patient));
+      // Print each request so you can read the context the EHR sends for each hook.
+      if (!process.env.NODE_TEST_CONTEXT)
+        console.log(`POST /cds-services/${service.id}\n${JSON.stringify(hookRequest, null, 2)}`);
+      if (service.hook === "patient-view") return send(res, 200, greetingCards(hookRequest.prefetch?.patient));
+      send(res, 200, orderCards(service.hook, hookRequest.context?.draftOrders));
     });
     return;
   }
